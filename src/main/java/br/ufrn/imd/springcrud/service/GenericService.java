@@ -91,12 +91,12 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Model save(Dto dto) throws ValidationException, EntityNotFoundException {
+    public Model save(Dto dto) throws ValidationException {
         return this.getRepository().save(convertToEntity(validate(ValidationType.NEW, dto)));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Model update(Long id, Dto dto) throws ValidationException, EntityNotFoundException {
+    public Model update(Long id, Dto dto) throws ValidationException {
         Dto newDTO = dto;
         newDTO.setId(id);
         return this.getRepository().save(convertToEntity(validate(ValidationType.EXISTING, newDTO)));

@@ -31,12 +31,12 @@ public abstract class GenericController<Model extends AbstractModel, Dto extends
     }
 
     @PostMapping
-    public ResponseEntity<Dto> save(@RequestBody Dto dto) throws ValidationException, EntityNotFoundException {
+    public ResponseEntity<Dto> save(@RequestBody Dto dto) throws ValidationException {
         return ResponseEntity.ok(this.getService().convertToDto(this.getService().save(dto)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Dto> update(@PathVariable Long id, @RequestBody Dto dto) throws ValidationException, EntityNotFoundException {
+    public ResponseEntity<Dto> update(@PathVariable Long id, @RequestBody Dto dto) throws ValidationException {
         return ResponseEntity.ok(this.getService().convertToDto(this.getService().update(id, dto)));
     }
 
