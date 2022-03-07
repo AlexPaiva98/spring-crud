@@ -1,5 +1,6 @@
 package br.ufrn.imd.springcrud.handler;
 
+import br.ufrn.imd.springcrud.exception.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -15,10 +16,6 @@ import org.hibernate.JDBCException;
 
 import javax.validation.constraints.NotNull;
 
-import br.ufrn.imd.springcrud.exception.EntityNotFoundException;
-import br.ufrn.imd.springcrud.exception.BusinessException;
-import br.ufrn.imd.springcrud.exception.GenericException;
-import br.ufrn.imd.springcrud.exception.ValidationException;
 import br.ufrn.imd.springcrud.util.MessageException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -60,6 +57,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(JDBCException.class)
     protected ResponseEntity<Object> handlerConstraintViolationException(JDBCException jdbcException) {
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, MessageException.getMessage(jdbcException));
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(ClientException.class)
+    protected ResponseEntity<Object> handlerClientException(ClientException clientException) {
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, MessageException.getMessage(clientException));
         return buildResponseEntity(apiError);
     }
 }

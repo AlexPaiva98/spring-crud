@@ -1,23 +1,21 @@
 package br.ufrn.imd.springcrud.model.dto;
 
-import java.io.Serializable;
-
-public class AbstractDto<PK extends Serializable> {
-    private PK id;
+public class AbstractDto {
+    private Long id;
 
     public AbstractDto() {
         this.setId(null);
     }
 
-    public AbstractDto(PK id) {
+    public AbstractDto(Long id) {
         this.setId(id);
     }
 
-    public PK getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(PK id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

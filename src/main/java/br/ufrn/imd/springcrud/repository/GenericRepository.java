@@ -8,24 +8,21 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
 import br.ufrn.imd.springcrud.model.AbstractModel;
 
 @NoRepositoryBean
-public interface GenericRepository<PK extends Serializable, Model extends AbstractModel<PK>>
-        extends JpaRepository<Model, PK> {
-
+public interface GenericRepository<Model extends AbstractModel> extends JpaRepository<Model, Long> {
     @Override
     @Query(value = "SELECT * FROM #{#entityName} WHERE id = :id AND active = true", nativeQuery = true)
-    Optional<Model> findById(PK id);
+    Optional<Model> findById(Long id);
 
     @Override
     @Modifying
     @Query(value = "UPDATE #{#entityName} SET active=false WHERE id = :id", nativeQuery = true)
-    void deleteById(PK id);
+    void deleteById(Long id);
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     List<Model> findAllByActiveIsTrueOrderByCreationDateCresc(Pageable pageable);

@@ -1,27 +1,32 @@
 package br.ufrn.imd.springcrud.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
+import org.modelmapper.ModelMapper;
+
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import br.ufrn.imd.springcrud.exception.ClientException;
 import br.ufrn.imd.springcrud.exception.EntityNotFoundException;
 import br.ufrn.imd.springcrud.exception.ValidationException;
+import br.ufrn.imd.springcrud.helper.TypeClass;
 import br.ufrn.imd.springcrud.model.AbstractModel;
 import br.ufrn.imd.springcrud.model.dto.AbstractDto;
 import br.ufrn.imd.springcrud.repository.GenericRepository;
 import br.ufrn.imd.springcrud.util.ValidationType;
 
 @Service
-public abstract class GenericService<PK extends Serializable, Model extends AbstractModel<PK>, Dto extends AbstractDto<PK>> {
+public abstract class GenericService<Model extends AbstractModel, Dto extends AbstractDto> {
     protected String entityName;
+    protected ModelMapper modelMapper;
 
     public GenericService() {
         this.entityName = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1].getTypeName();
@@ -32,13 +37,36 @@ public abstract class GenericService<PK extends Serializable, Model extends Abst
         return this.entityName;
     }
 
-    public abstract Dto convertToDto(Model entity);
+    @Autowired
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
-    public abstract Model convertToEntity(Dto dto);
+    protected abstract GenericRepository<Model> getRepository();
 
-    public abstract Dto validate(ValidationType validationType, Dto dto) throws ValidationException;
+    public Dto convertToDto(Model entity) {
+        TypeClass<Dto> instance = new TypeClass<Dto>() {};
+        Dto dto = null;
+        try {
+            dto = modelMapper.map(entity, instance.getGenericClass());
+        } catch (ClassNotFoundException classNotFoundException) {
+            throw new ClientException("non-existent dto class");
+        }
+        return dto;
+    }
 
-    protected abstract GenericRepository<PK, Model> getRepository();
+    public Model convertToEntity(Dto dto) {
+        TypeClass<Model> instance = new TypeClass<Model>() {};
+        Model entity = null;
+        try {
+            entity = modelMapper.map(dto, instance.getGenericClass());
+        } catch (ClassNotFoundException classNotFoundException) {
+            throw new ClientException("non-existent model class");
+        }
+        return entity;
+    }
+
+    protected abstract Dto validate(ValidationType validationType, Dto dto) throws ValidationException;
 
     public Collection<Dto> convertToDTOList(Collection<Model> entities) {
         return entities.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -49,7 +77,7 @@ public abstract class GenericService<PK extends Serializable, Model extends Abst
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Model findById(PK id) throws EntityNotFoundException {
+    public Model findById(Long id) throws EntityNotFoundException {
         Optional<Model> entity = this.getRepository().findById(id);
         if (entity.isEmpty()) {
             throw new EntityNotFoundException(this.getEntityName(), id.toString());
@@ -63,19 +91,19 @@ public abstract class GenericService<PK extends Serializable, Model extends Abst
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Model save(Dto dto) throws ValidationException {
+    public Model save(Dto dto) throws ValidationException, EntityNotFoundException {
         return this.getRepository().save(convertToEntity(validate(ValidationType.NEW, dto)));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Model update(PK id, Dto dto) throws ValidationException {
+    public Model update(Long id, Dto dto) throws ValidationException, EntityNotFoundException {
         Dto newDTO = dto;
         newDTO.setId(id);
         return this.getRepository().save(convertToEntity(validate(ValidationType.EXISTING, newDTO)));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteById(PK id) throws EntityNotFoundException {
+    public void deleteById(Long id) throws EntityNotFoundException {
         Optional<Model> entity = getRepository().findById(id);
         if (entity.isEmpty()) {
             throw new EntityNotFoundException(this.getEntityName(), id.toString());

@@ -9,17 +9,15 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PreRemove;
-import javax.persistence.PreUpdate;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class AbstractModel<PK extends Serializable> {
+public abstract class AbstractModel {
+    @Id
+    private Long id;
 
     @Column(name = "creation_date", nullable = false, updatable = false)
     @CreatedDate
@@ -45,9 +43,13 @@ public abstract class AbstractModel<PK extends Serializable> {
     @NotNull
     private Boolean active = true;
 
-    public abstract PK getId();
+    public Long getId() {
+        return id;
+    }
 
-    public abstract void setId(PK id);
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @JsonIgnore
     public LocalDateTime getCreationDate() {
@@ -76,6 +78,15 @@ public abstract class AbstractModel<PK extends Serializable> {
         this.deletionDate = deletionDate;
     }
 
+    @JsonIgnore
+    public Boolean getActive() {
+        return this.active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     @PreUpdate
     public void preUpdate() {
         this.modificationDate = LocalDateTime.now();
@@ -84,15 +95,6 @@ public abstract class AbstractModel<PK extends Serializable> {
     @PreRemove
     public void preRemove() {
         this.deletionDate = LocalDateTime.now();
-    }
-
-    @JsonIgnore
-    public Boolean getActive() {
-        return this.active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
     }
 }
 

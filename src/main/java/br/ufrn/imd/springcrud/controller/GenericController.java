@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import br.ufrn.imd.springcrud.exception.EntityNotFoundException;
@@ -18,8 +17,8 @@ import br.ufrn.imd.springcrud.model.AbstractModel;
 import br.ufrn.imd.springcrud.model.dto.AbstractDto;
 import br.ufrn.imd.springcrud.service.GenericService;
 
-public abstract class GenericController<PK extends Serializable, Model extends AbstractModel<PK>, Dto extends AbstractDto<PK>> {
-    protected abstract GenericService<PK, Model, Dto> getService();
+public abstract class GenericController<Model extends AbstractModel, Dto extends AbstractDto> {
+    protected abstract GenericService<Model, Dto> getService();
 
     @GetMapping
     public ResponseEntity<Collection<Dto>> findAll(@RequestParam("limit") Integer limit, @RequestParam("page") Integer page) {
@@ -27,22 +26,22 @@ public abstract class GenericController<PK extends Serializable, Model extends A
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Dto> findById(@PathVariable PK id) throws EntityNotFoundException {
+    public ResponseEntity<Dto> findById(@PathVariable Long id) throws EntityNotFoundException {
         return ResponseEntity.ok(this.getService().convertToDto(this.getService().findById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<Dto> save(@RequestBody Dto dto) throws ValidationException {
+    public ResponseEntity<Dto> save(@RequestBody Dto dto) throws ValidationException, EntityNotFoundException {
         return ResponseEntity.ok(this.getService().convertToDto(this.getService().save(dto)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Dto> update(@PathVariable PK id, @RequestBody Dto dto) throws ValidationException {
+    public ResponseEntity<Dto> update(@PathVariable Long id, @RequestBody Dto dto) throws ValidationException, EntityNotFoundException {
         return ResponseEntity.ok(this.getService().convertToDto(this.getService().update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable PK id) throws EntityNotFoundException {
+    public ResponseEntity delete(@PathVariable Long id) throws EntityNotFoundException {
         getService().deleteById(id);
         return ResponseEntity.ok().build();
     }
