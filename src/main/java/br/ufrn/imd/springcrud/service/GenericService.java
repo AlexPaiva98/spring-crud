@@ -2,7 +2,6 @@ package br.ufrn.imd.springcrud.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ import br.ufrn.imd.springcrud.model.dto.AbstractDto;
 import br.ufrn.imd.springcrud.repository.GenericRepository;
 import br.ufrn.imd.springcrud.util.ValidationTypeUtil;
 
-@Service
 public abstract class GenericService<Model extends AbstractModel, Dto extends AbstractDto> {
     protected String entityName;
     protected ModelMapper modelMapper;
@@ -33,13 +31,13 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
         this.entityName = this.entityName.substring(this.entityName.lastIndexOf(".") + 1);
     }
 
-    public String getEntityName() {
-        return this.entityName;
-    }
-
     @Autowired
     public void setModelMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
+    }
+
+    public String getEntityName() {
+        return this.entityName;
     }
 
     protected abstract GenericRepository<Model> getRepository();
@@ -48,7 +46,7 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
         TypeClassHelper<Dto> instance = new TypeClassHelper<Dto>() {};
         Dto dto = null;
         try {
-            dto = modelMapper.map(entity, instance.getGenericClass());
+            dto = this.modelMapper.map(entity, instance.getGenericClass());
         } catch (ClassNotFoundException classNotFoundException) {
             throw new ClientException("non-existent dto class");
         }
@@ -59,14 +57,14 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
         TypeClassHelper<Model> instance = new TypeClassHelper<Model>() {};
         Model entity = null;
         try {
-            entity = modelMapper.map(dto, instance.getGenericClass());
+            entity = this.modelMapper.map(dto, instance.getGenericClass());
         } catch (ClassNotFoundException classNotFoundException) {
             throw new ClientException("non-existent model class");
         }
         return entity;
     }
 
-    protected abstract Dto validate(ValidationTypeUtil validationType, Dto dto) throws ValidationException;
+    protected abstract void validate(ValidationTypeUtil validationType, Dto dto) throws ValidationException;
 
     public Collection<Dto> convertToDTOList(Collection<Model> entities) {
         return entities.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -87,19 +85,20 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<Model> findAll(Integer lim, Integer pg) {
-        return this.getRepository().findAllByActiveIsTrueOrderByCreationDateCresc(PageRequest.of(pg, lim));
+        return this.getRepository().findAllByActiveIsTrueOrderByCreationDateDesc(PageRequest.of(pg, lim));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Model save(Dto dto) throws ValidationException {
-        return this.getRepository().save(convertToEntity(validate(ValidationTypeUtil.NEW, dto)));
+        validate(ValidationTypeUtil.NEW, dto);
+        return this.getRepository().save(convertToEntity(dto));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Model update(Long id, Dto dto) throws ValidationException {
-        Dto newDTO = dto;
-        newDTO.setId(id);
-        return this.getRepository().save(convertToEntity(validate(ValidationTypeUtil.EXISTING, newDTO)));
+        dto.setId(id);
+        validate(ValidationTypeUtil.EXISTING, dto);
+        return this.getRepository().save(convertToEntity(dto));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
