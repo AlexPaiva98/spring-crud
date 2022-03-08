@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 import br.ufrn.imd.springcrud.exception.ClientException;
 import br.ufrn.imd.springcrud.exception.EntityNotFoundException;
 import br.ufrn.imd.springcrud.exception.ValidationException;
-import br.ufrn.imd.springcrud.helper.TypeClass;
+import br.ufrn.imd.springcrud.helper.TypeClassHelper;
 import br.ufrn.imd.springcrud.model.AbstractModel;
 import br.ufrn.imd.springcrud.model.dto.AbstractDto;
 import br.ufrn.imd.springcrud.repository.GenericRepository;
-import br.ufrn.imd.springcrud.util.ValidationType;
+import br.ufrn.imd.springcrud.util.ValidationTypeUtil;
 
 @Service
 public abstract class GenericService<Model extends AbstractModel, Dto extends AbstractDto> {
@@ -45,7 +45,7 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
     protected abstract GenericRepository<Model> getRepository();
 
     public Dto convertToDto(Model entity) {
-        TypeClass<Dto> instance = new TypeClass<Dto>() {};
+        TypeClassHelper<Dto> instance = new TypeClassHelper<Dto>() {};
         Dto dto = null;
         try {
             dto = modelMapper.map(entity, instance.getGenericClass());
@@ -56,7 +56,7 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
     }
 
     public Model convertToEntity(Dto dto) {
-        TypeClass<Model> instance = new TypeClass<Model>() {};
+        TypeClassHelper<Model> instance = new TypeClassHelper<Model>() {};
         Model entity = null;
         try {
             entity = modelMapper.map(dto, instance.getGenericClass());
@@ -66,7 +66,7 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
         return entity;
     }
 
-    protected abstract Dto validate(ValidationType validationType, Dto dto) throws ValidationException;
+    protected abstract Dto validate(ValidationTypeUtil validationType, Dto dto) throws ValidationException;
 
     public Collection<Dto> convertToDTOList(Collection<Model> entities) {
         return entities.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -92,14 +92,14 @@ public abstract class GenericService<Model extends AbstractModel, Dto extends Ab
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Model save(Dto dto) throws ValidationException {
-        return this.getRepository().save(convertToEntity(validate(ValidationType.NEW, dto)));
+        return this.getRepository().save(convertToEntity(validate(ValidationTypeUtil.NEW, dto)));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Model update(Long id, Dto dto) throws ValidationException {
         Dto newDTO = dto;
         newDTO.setId(id);
-        return this.getRepository().save(convertToEntity(validate(ValidationType.EXISTING, newDTO)));
+        return this.getRepository().save(convertToEntity(validate(ValidationTypeUtil.EXISTING, newDTO)));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
