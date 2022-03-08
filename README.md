@@ -32,7 +32,7 @@ Spring-CRUD is a framework that provides a framework with basic server applicati
 
 ## By Intellij
 
-1. **File** > **Project Structure...** > **Libraries** > **+** > **Java** > **FILE.jar**
+1. **File** > **Project Structure...** > **Libraries** > **+** > **Java** > **PROJECT.jar**
 
 # EXAMPLES
 
