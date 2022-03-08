@@ -24,10 +24,19 @@ Spring-CRUD is a framework that provides a framework with basic server applicati
 - Get methods that return a lot of data allow for pagination
 - Delete methods follow the philosophy of never really deleting data, only disabling
 
+# HOW TO EXPORT
+
+1. In the root of the project type: **mvn package**
+
+# HOW TO IMPORT
+
+## By Intellij
+
+1. **File** > **Project Structure...** > **Libraries** > **+** > **FILE.jar**
+
 # EXAMPLES
 
-- ...
-- ...
+- https://github.com/AlexPaiva98/spring-crud/tree/master/example/finance
 
 # AUTHORS
 
