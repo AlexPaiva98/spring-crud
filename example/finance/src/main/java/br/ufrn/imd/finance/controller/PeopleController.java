@@ -12,7 +12,7 @@ import br.ufrn.imd.finance.model.dto.PeopleDto;
 import br.ufrn.imd.finance.service.PeopleService;
 
 @RestController
-@RequestMapping("/finances")
+@RequestMapping("/peoples")
 public class PeopleController extends GenericController<PeopleModel, PeopleDto> {
     private PeopleService peopleService;
 
