@@ -1,5 +1,6 @@
 package br.ufrn.imd.springcrud.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import br.ufrn.imd.springcrud.model.AbstractModel;
 import br.ufrn.imd.springcrud.model.dto.AbstractDto;
 import br.ufrn.imd.springcrud.service.GenericService;
 
+@CrossOrigin
 public abstract class GenericController<Model extends AbstractModel, Dto extends AbstractDto> {
     protected abstract GenericService<Model, Dto> getService();
 

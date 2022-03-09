@@ -25,5 +25,5 @@ public interface GenericRepository<Model extends AbstractModel> extends JpaRepos
     void deleteById(Long id);
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    List<Model> findAllByActiveIsTrueOrderByCreationDateCresc(Pageable pageable);
+    List<Model> findAllByActiveIsTrueOrderByCreationDateDesc(Pageable pageable);
 }

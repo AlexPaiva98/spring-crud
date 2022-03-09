@@ -16,7 +16,7 @@ import org.hibernate.JDBCException;
 
 import javax.validation.constraints.NotNull;
 
-import br.ufrn.imd.springcrud.util.MessageException;
+import br.ufrn.imd.springcrud.util.MessageExceptionUtil;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -32,37 +32,37 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(GenericException.class)
     protected ResponseEntity<Object> handlerGenericException(GenericException genericException) {
-        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, MessageException.getMessage(genericException));
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, MessageExceptionUtil.getMessage(genericException));
         return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<Object> handlerEntityNotFoundException(EntityNotFoundException entityNotFoundException) {
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, MessageException.getMessage(entityNotFoundException));
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, MessageExceptionUtil.getMessage(entityNotFoundException));
         return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<Object> handlerBusinessException(BusinessException businessException) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, MessageException.getMessage(businessException));
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, MessageExceptionUtil.getMessage(businessException));
         return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(ValidationException.class)
     protected ResponseEntity<Object> handlerValidationException(ValidationException validationException) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, MessageException.getMessage(validationException));
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, MessageExceptionUtil.getMessage(validationException));
         return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(JDBCException.class)
     protected ResponseEntity<Object> handlerConstraintViolationException(JDBCException jdbcException) {
-        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, MessageException.getMessage(jdbcException));
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, MessageExceptionUtil.getMessage(jdbcException));
         return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(ClientException.class)
     protected ResponseEntity<Object> handlerClientException(ClientException clientException) {
-        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, MessageException.getMessage(clientException));
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, MessageExceptionUtil.getMessage(clientException));
         return buildResponseEntity(apiError);
     }
 }
