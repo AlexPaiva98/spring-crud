@@ -33,7 +33,7 @@ Spring-CRUD is a framework that provides a framework with basic server applicati
 ## By Intellij
 
 1. **File** > **Project Structure...** > **Libraries** > **+** > **Java** > **PROJECT.jar**
-2. Insert the annotation **@ComponentScan(basePackages = { "br.ufrn.imd.springcrud.*" })** in the **Application.java**
+2. Insert the annotation **@ComponentScan(basePackages = { "br.ufrn.imd.*" })** in the **Application.java**
 
 # EXAMPLES
 
