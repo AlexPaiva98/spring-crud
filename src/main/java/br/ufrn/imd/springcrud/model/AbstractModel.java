@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public abstract class AbstractModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "creation_date", nullable = false, updatable = false)

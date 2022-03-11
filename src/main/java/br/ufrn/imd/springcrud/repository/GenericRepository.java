@@ -11,10 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import br.ufrn.imd.springcrud.model.AbstractModel;
-
 @NoRepositoryBean
-public interface GenericRepository<Model extends AbstractModel> extends JpaRepository<Model, Long> {
+public interface GenericRepository<Model> extends JpaRepository<Model, Long> {
     @Override
     @Query(value = "SELECT * FROM #{#entityName} WHERE id = :id AND active = true", nativeQuery = true)
     Optional<Model> findById(Long id);

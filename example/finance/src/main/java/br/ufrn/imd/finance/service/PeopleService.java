@@ -3,7 +3,6 @@ package br.ufrn.imd.finance.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.ufrn.imd.springcrud.exception.EntityNotFoundException;
 import br.ufrn.imd.springcrud.exception.ValidationException;
 import br.ufrn.imd.springcrud.helper.ExceptionHelper;
 import br.ufrn.imd.springcrud.repository.GenericRepository;
@@ -29,29 +28,15 @@ public class PeopleService extends GenericService<PeopleModel, PeopleDto> {
     }
 
     @Override
-    protected void validate(ValidationTypeUtil validationType, PeopleDto dto) throws ValidationException {
+    protected void validateDto(ValidationTypeUtil validationTypeUtil, PeopleDto dto) throws ValidationException {
         ExceptionHelper exceptionHelper = new ExceptionHelper();
-        if (validationType == ValidationTypeUtil.EXISTING) {
-            /** Check id */
-            if (dto.getId() == null) {
-                exceptionHelper.add("id cannot be null");
-            } else if (dto.getId() < 0) {
-                exceptionHelper.add("id cannot be negative");
-            } else {
-                try {
-                    this.findById(dto.getId());
-                } catch (EntityNotFoundException entityNotFoundException) {
-                    exceptionHelper.add(entityNotFoundException.getMessage());
-                }
-            }
-        }
         /** Check name */
         if (dto.getName().isEmpty()) {
             exceptionHelper.add("invalid name");
         }
         /** Check error */
-        if (exceptionHelper.isEmpty()) {
-            throw new ValidationException((exceptionHelper.getMessage()));
+        if (!exceptionHelper.isEmpty()) {
+            throw new ValidationException(exceptionHelper.getMessage());
         }
     }
 }

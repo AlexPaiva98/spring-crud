@@ -14,12 +14,10 @@ import java.util.Collection;
 
 import br.ufrn.imd.springcrud.exception.EntityNotFoundException;
 import br.ufrn.imd.springcrud.exception.ValidationException;
-import br.ufrn.imd.springcrud.model.AbstractModel;
-import br.ufrn.imd.springcrud.model.dto.AbstractDto;
 import br.ufrn.imd.springcrud.service.GenericService;
 
 @CrossOrigin
-public abstract class GenericController<Model extends AbstractModel, Dto extends AbstractDto> {
+public abstract class GenericController<Model, Dto> {
     protected abstract GenericService<Model, Dto> getService();
 
     @GetMapping
@@ -44,7 +42,7 @@ public abstract class GenericController<Model extends AbstractModel, Dto extends
 
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id) throws EntityNotFoundException {
-        getService().deleteById(id);
+        this.getService().deleteById(id);
         return ResponseEntity.ok().build();
     }
 }
