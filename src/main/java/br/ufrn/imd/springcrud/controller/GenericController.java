@@ -1,13 +1,6 @@
 package br.ufrn.imd.springcrud.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Collection;
@@ -35,9 +28,14 @@ public abstract class GenericController<Model, Dto> {
         return ResponseEntity.ok(this.getService().convertToDto(this.getService().save(dto)));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Dto> update(@PathVariable Long id, @RequestBody Dto dto) throws ValidationException {
         return ResponseEntity.ok(this.getService().convertToDto(this.getService().update(id, dto)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Dto> updateAll(@PathVariable Long id, @RequestBody Dto dto) throws ValidationException {
+        return ResponseEntity.ok(this.getService().convertToDto(this.getService().updateAll(id, dto)));
     }
 
     @DeleteMapping("/{id}")
