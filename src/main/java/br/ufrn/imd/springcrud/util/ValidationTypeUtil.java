@@ -1,5 +1,5 @@
 package br.ufrn.imd.springcrud.util;
 
 public enum ValidationTypeUtil {
-    NEW, EXISTING,
+    CREATE, UPDATE, UPDATE_ALL,
 }

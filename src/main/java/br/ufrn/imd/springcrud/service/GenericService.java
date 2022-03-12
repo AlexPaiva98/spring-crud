@@ -99,14 +99,21 @@ public abstract class GenericService<Model, Dto> {
     @Transactional(propagation = Propagation.REQUIRED)
     public Model save(Dto dto) throws ValidationException {
         this.validateNonExistentOfIdInDto(dto);
-        this.validateDto(ValidationTypeUtil.NEW, dto);
+        this.validateDto(ValidationTypeUtil.CREATE, dto);
         return this.getRepository().save(this.convertToEntity(dto));
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Model update(Long id, Dto dto) throws ValidationException {
         this.validateId(id);
-        this.validateDto(ValidationTypeUtil.EXISTING, dto);
+        this.validateDto(ValidationTypeUtil.UPDATE, dto);
+        return this.getRepository().save(this.convertToEntity(dto));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Model updateAll(Long id, Dto dto) throws ValidationException {
+        this.validateId(id);
+        this.validateDto(ValidationTypeUtil.UPDATE_ALL, dto);
         return this.getRepository().save(this.convertToEntity(dto));
     }
 
