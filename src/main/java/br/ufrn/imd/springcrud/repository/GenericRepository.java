@@ -17,6 +17,10 @@ public interface GenericRepository<Model> extends JpaRepository<Model, Long> {
     @Query(value = "SELECT * FROM #{#entityName} WHERE id = :id AND active = true", nativeQuery = true)
     Optional<Model> findById(Long id);
 
+    @Modifying
+    @Query(value = "UPDATE #{#entityName} SET active=true WHERE id = :id", nativeQuery = true)
+    void activateById(Long id);
+
     @Override
     @Modifying
     @Query(value = "UPDATE #{#entityName} SET active=false WHERE id = :id", nativeQuery = true)

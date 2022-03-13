@@ -1,5 +1,6 @@
 package br.ufrn.imd.springcrud.service;
 
+import br.ufrn.imd.springcrud.model.AbstractModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,7 +21,7 @@ import br.ufrn.imd.springcrud.exception.ValidationException;
 import br.ufrn.imd.springcrud.repository.GenericRepository;
 import br.ufrn.imd.springcrud.util.ValidationTypeUtil;
 
-public abstract class GenericService<Model, Dto> {
+public abstract class GenericService<Model extends AbstractModel, Dto extends AbstractDto> {
     protected Type modelType;
     protected Type dtoType;
     protected String entityName;
@@ -45,6 +46,8 @@ public abstract class GenericService<Model, Dto> {
     protected abstract GenericRepository<Model> getRepository();
 
     protected abstract void validateDto(ValidationTypeUtil validationTypeUtil, Dto dto) throws ValidationException;
+
+    protected abstract boolean entityExists(Model entity);
 
     public Dto convertToDto(Model entity) {
         return this.modelMapper.map(entity, this.dtoType);
@@ -100,7 +103,13 @@ public abstract class GenericService<Model, Dto> {
     public Model save(Dto dto) throws ValidationException {
         this.validateNonExistentOfIdInDto(dto);
         this.validateDto(ValidationTypeUtil.CREATE, dto);
-        return this.getRepository().save(this.convertToEntity(dto));
+        Model entity = this.convertToEntity(dto);
+        if (this.entityExists(entity)) {
+            this.getRepository().activateById(entity.getId());
+            return this.getRepository().getById(entity.getId());
+        } else {
+            return this.getRepository().save(entity);
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -118,12 +127,14 @@ public abstract class GenericService<Model, Dto> {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteById(Long id) throws EntityNotFoundException {
+    public Model deleteById(Long id) throws EntityNotFoundException {
         Optional<Model> entity = getRepository().findById(id);
         if (entity.isEmpty()) {
             throw new EntityNotFoundException(this.getEntityName(), id.toString());
-        } else {
-            this.getRepository().deleteById(id);
         }
+        this.getRepository().deleteById(id);
+        Model e = entity.get();
+        e.setActive(false);
+        return e;
     }
 }

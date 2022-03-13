@@ -1,5 +1,7 @@
 package br.ufrn.imd.springcrud.controller;
 
+import br.ufrn.imd.springcrud.model.AbstractModel;
+import br.ufrn.imd.springcrud.model.dto.AbstractDto;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
@@ -10,7 +12,7 @@ import br.ufrn.imd.springcrud.exception.ValidationException;
 import br.ufrn.imd.springcrud.service.GenericService;
 
 @CrossOrigin
-public abstract class GenericController<Model, Dto> {
+public abstract class GenericController<Model extends AbstractModel, Dto extends AbstractDto> {
     protected abstract GenericService<Model, Dto> getService();
 
     @GetMapping
@@ -39,8 +41,7 @@ public abstract class GenericController<Model, Dto> {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) throws EntityNotFoundException {
-        this.getService().deleteById(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Dto> delete(@PathVariable Long id) throws EntityNotFoundException {
+        return ResponseEntity.ok(this.getService().convertToDto(this.getService().deleteById(id)));
     }
 }
