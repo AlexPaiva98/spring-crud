@@ -2,6 +2,7 @@ package br.ufrn.imd.springcrud.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,14 @@ import br.ufrn.imd.springcrud.exception.ValidationException;
 import br.ufrn.imd.springcrud.repository.GenericRepository;
 import br.ufrn.imd.springcrud.util.ValidationTypeUtil;
 
+@Service
 public abstract class GenericService<Model, Dto> {
     protected Type modelType;
     protected Type dtoType;
     protected String entityName;
     protected ModelMapper modelMapper;
 
-    public GenericService() {
+    protected GenericService() {
         this.modelType = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.dtoType = (((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1]);
         this.entityName = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1].getTypeName();
