@@ -2,14 +2,14 @@ package br.ufrn.imd.finance.model.dto;
 
 import br.ufrn.imd.springcrud.model.dto.AbstractDto;
 
-public class PeopleDto extends AbstractDto {
+public class PersonDto extends AbstractDto {
     private String name;
 
-    public PeopleDto() {
+    public PersonDto() {
         this.setName("");
     }
 
-    public PeopleDto(String name) {
+    public PersonDto(String name) {
         this.setName(name);
     }
 

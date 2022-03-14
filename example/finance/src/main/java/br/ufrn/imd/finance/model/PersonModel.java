@@ -5,14 +5,14 @@ import javax.persistence.Entity;
 import br.ufrn.imd.springcrud.model.AbstractModel;
 
 @Entity
-public class PeopleModel extends AbstractModel {
+public class PersonModel extends AbstractModel {
     private String name;
 
-    public PeopleModel() {
+    public PersonModel() {
         this.setName("");
     }
 
-    public PeopleModel(String name) {
+    public PersonModel(String name) {
         this.setName(name);
     }
 
